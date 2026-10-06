@@ -1,119 +1,97 @@
-# Arquitetura 1.0.0
+# Architecture 1.0.0
 
-## Dependencias
+## Dependencies
 
-- `DZ_Gear_Camping`: fornece `CombinationLock4` e seus recursos fisicos vanilla.
-- `DZ_Scripts`: fornece a implementacao de script vanilla do cadeado.
+- `DZ_Gear_Camping` provides `CombinationLock4` and its vanilla physical assets.
+- `DZ_Scripts` provides the vanilla lock script implementation.
 
-## Classe
+## Class
 
 `Zellno_CombinationLock4 : CombinationLock4`
 
-Somente `scope`, nome e descricao sao declarados. Modelo, texturas, materiais, slots, peso, tamanho, dano e comportamento permanecem herdados.
+Only `scope`, display name and description are declared. The model, textures, materials, slots, weight, size, damage and behavior remain inherited.
 
-## Nucleo de autorizacao
+## Authorization core
 
-- A lista de jogadores autorizados pertence ao proprio `Zellno_CombinationLock4`.
-- O identificador persistido e `PlayerIdentity.GetId()` e nunca e sincronizado ao cliente.
-- A senha correta enviada pela interface autoriza o jogador e abre o `Fence` sem liberar o slot nem derrubar o cadeado.
-- A Action Zellno aparece no portao fechado com nosso cadeado; o servidor somente abre para um jogador autorizado.
-- O fechamento protegido usa `ActionZellnoCloseFence`.
-- Cada nova instalacao fisica do cadeado limpa a senha Zellno e a lista de autorizacoes.
-- O limite e de 64 jogadores por cadeado.
+- The authorized-player list belongs to each `Zellno_CombinationLock4` instance.
+- The persisted identifier is `PlayerIdentity.GetId()` and is never synchronized to clients.
+- A correct password sent through the interface authorizes the player and opens the `Fence` without releasing the slot or dropping the lock.
+- The Zellno action appears on a closed gate protected by this lock; the server opens it only for an authorized player.
+- Protected closing uses `ActionZellnoCloseFence`.
+- Every physical reinstallation clears the Zellno password and authorization list.
+- Each lock stores at most 64 authorized players.
 
-## Fluxo eletronico, menu e remocao
+## Electronic workflow, menu and removal
 
-### Compatibilidade opcional com RaG BaseBuilding
+### Optional RaG BaseBuilding compatibility
 
-As portas RaG derivam de `Fence`, mas registram novamente as Actions analogicas
-no proprio `SetActions()` e usam selecoes de modelo diferentes de
-`gate_interact`. A compatibilidade Zellno trabalha somente com a interface
-vanilla herdada (`Fence`, `GetCombinationLock`, `OpenFence` e `CloseFence`).
+RaG doors derive from `Fence`, but register analog actions again in their own `SetActions()` and use model selections other than `gate_interact`. Zellno compatibility uses only the inherited vanilla interface: `Fence`, `GetCombinationLock`, `OpenFence` and `CloseFence`.
 
-Nenhuma classe RaG aparece como tipo compilado no nucleo e `RaG_BaseBuilding`
-nao foi adicionado a `requiredAddons[]` do PBO principal. A deteccao ocorre em
-tempo de execucao pelo prefixo de classname `RaG_BB_`; assim o nucleo Zellno
-permanece independente quando o RaG nao estiver instalado. O segundo PBO e
-produzido em `optional/` e so deve ser movido para `addons/` em servidores que
-usam RaG BaseBuilding.
+No RaG class is compiled as a type in the core PBO, and `RaG_BaseBuilding` is not listed in its `requiredAddons[]`. Runtime detection uses the `RaG_BB_` classname prefix, keeping the Zellno core independent when RaG is absent. A second PBO is produced in `optional/` and should be moved to `addons/` only on servers using RaG BaseBuilding.
 
-Quando um cadeado Zellno esta anexado, as condicoes das Actions analogicas e das
-Actions originais de abrir e fechar retornam `false` somente para aquela porta.
-Ao retirar o cadeado, as condicoes originais voltam a ser atendidas naturalmente.
-Locks vanilla e demais estruturas nao sao alterados.
+While a Zellno lock is attached, the analog actions and original open and close actions return `false` only for that door. Removing the lock naturally restores the original conditions. Vanilla locks and unrelated structures are not modified.
 
-### Compatibilidade opcional com RaG Hunting Cabin
+### Optional RaG Hunting Cabin compatibility
 
-O RaG Hunting Cabin publica o define `RAG_HUNTING_CABIN`. Todo o adaptador fica
-protegido por esse define; sem o mod instalado, nenhuma classe RaG e compilada
-ou exigida pelo Zellno Combo Lock.
+RaG Hunting Cabin publishes the `RAG_HUNTING_CABIN` define. The entire adapter is guarded by this define; without the mod installed, no RaG class is compiled or required by Zellno Combo Lock.
 
-As cabines normal e admin sao instancias da mesma classe `rag_hunting_cabin`.
-A variante admin difere apenas pelo estado interno `m_IsAdminHuntingCabin`, por
-isso um unico adaptador atende ambas. O adaptador usa o slot vanilla
-`Att_CombinationLock`, a selecao `cabin_door` e os metodos publicos
-`GetCombinationLock`, `OpenHuntCabDoor` e `CloseHuntCabDoor`.
+Normal and admin cabins are instances of the same `rag_hunting_cabin` class. The admin variant differs only through its internal `m_IsAdminHuntingCabin` state, so one adapter supports both. The adapter uses the vanilla `Att_CombinationLock` slot, the `cabin_door` selection and the public `GetCombinationLock`, `OpenHuntCabDoor` and `CloseHuntCabDoor` methods.
 
-Enquanto um Zellno Combo Lock estiver anexado, sao suprimidas somente
-`ActionDialCombinationLockOnHuntingCabin`,
-`ActionNextCombinationLockDialOnHuntingCabin`, `ActionOpenHuntingCabin` e
-`ActionCloseHuntingCabin`. Janelas, luzes, construcao e demais acoes permanecem
-intactas. Ao retirar o cadeado, as quatro acoes originais sao restauradas.
+While a Zellno Combo Lock is attached, only `ActionDialCombinationLockOnHuntingCabin`, `ActionNextCombinationLockDialOnHuntingCabin`, `ActionOpenHuntingCabin` and `ActionCloseHuntingCabin` are suppressed. Windows, lights, construction and unrelated actions remain intact. Removing the lock restores all four original actions.
 
-- A Action abre a interface no lado cliente em `Start`; abrir a UI nao depende de RPC.
-- O servidor revalida jogador, identidade, estrutura fechada, cadeado anexado, estado trancado e distancia. Fence usa limite de 3 metros; RaG Hunting Cabin usa 5 metros porque seus attachments compartilham a origem central da cabine.
-- Para jogador autorizado, o servidor abre o portao diretamente.
-- A interface envia uma string de quatro a seis caracteres pelo jogador; ela nunca recebe a senha correta.
-- Sem senha Zellno, o servidor grava a unica entrada valida e autoriza o criador.
-- Com senha Zellno, o servidor compara, autoriza e abre somente em caso de igualdade.
-- `m_ZellnoCode` existe somente no servidor; apenas `m_ZellnoConfigured` e sincronizado.
-- As Actions analogicas herdadas sao removidas e `UnlockServer` nao aceita os discos vanilla.
-- Uma tentativa nao altera `m_Combination`, os mostradores ou o slot do cadeado.
-- Ha um intervalo minimo simples de 1 segundo por jogador e por cadeado. Ele protege o endpoint RPC sem constituir ainda um sistema progressivo de bloqueio.
-- A raiz e o fundo recebem a resolucao atual em pixels; a janela de `500x320` e centralizada explicitamente antes e depois de `super.OnShow()`.
-- A raiz remove `IGNOREPOINTER` e recebe `VISIBLE` e `RENDER_ALWAYS`.
-- `s_ActiveMenu` e uma referencia forte e preserva a instancia criada por `ShowScriptedMenu` ate seu fechamento normal.
-- Os componentes internos usam posicoes e tamanhos exatos; a configuracao envia uma unica entrada de quatro a seis numeros.
-- Titulo, instrucao e status usam tamanho textual exato; botoes usam proporcao textual limitada em relacao a altura.
-- O menu usa a API vanilla `Hud` para ocultar HUD e barra rapida durante a interacao e restaura ambos ao fechar.
-- Backspace e Delete permanecem nativos do campo de edicao.
-- `KC_ESCAPE` continua sendo tratado quando chega ao menu, mas o campo com foco pode consumir esse evento bruto.
-- O `Update()` consulta `UAUIBack`, seguindo o padrao dos menus vanilla, e usa a mesma rotina idempotente do botao `CANCEL`.
-- A restauracao de controles, HUD e barra rapida e idempotente e tambem executa em `Cleanup` como contingencia.
-- A senha fica visivel durante a digitacao para permitir conferencia e compartilhamento deliberado pelo jogador.
-- `Update` normaliza continuamente o campo porque `PasswordEditBoxWidget.OnChange` nao e emitido a cada tecla nesta interface.
-- O cliente remove qualquer caractere nao numerico e corta o texto depois do sexto algarismo; o servidor repete a validacao antes de gravar ou comparar.
+- The action opens the interface on the client in `Start`; opening the UI does not depend on an RPC.
+- The server validates the player, identity, closed structure, attached lock, locked state and distance again. A vanilla `Fence` uses a 3-meter limit; RaG Hunting Cabin uses 5 meters because its attachments share the cabin's central origin.
+- For an authorized player, the server opens the gate directly.
+- The interface sends a four-to-six-character string supplied by the player; it never receives the correct password.
+- If no Zellno password exists, the server stores the single valid entry and authorizes its creator.
+- If a Zellno password exists, the server compares it, authorizes the player and opens the structure only on an exact match.
+- `m_ZellnoCode` exists only on the server; only `m_ZellnoConfigured` is synchronized.
+- Inherited analog actions are removed, and `UnlockServer` does not accept the vanilla dials.
+- An attempt does not modify `m_Combination`, the physical dials or the lock slot.
+- A simple minimum interval of one second is enforced per player and per lock. It protects the RPC endpoint but is not a progressive lockout system.
+- The root and background use the current pixel resolution; the `500x320` window is explicitly centered before and after `super.OnShow()`.
+- The root removes `IGNOREPOINTER` and receives `VISIBLE` and `RENDER_ALWAYS`.
+- `s_ActiveMenu` is a strong reference that keeps the instance created by `ShowScriptedMenu` alive until normal closure.
+- Internal components use exact positions and sizes; setup submits one entry containing four to six digits.
+- Title, instruction and status use exact text sizes; button text proportions are constrained relative to button height.
+- The menu uses the vanilla `Hud` API to hide the HUD and quickbar during interaction and restores both on close.
+- Backspace and Delete retain the edit field's native behavior.
+- `KC_ESCAPE` is still handled when it reaches the menu, although a focused field may consume the raw event.
+- `Update()` polls `UAUIBack`, following the vanilla menu pattern, and calls the same idempotent close routine as `CANCEL`.
+- Control, HUD and quickbar restoration is idempotent and also runs from `Cleanup` as a fallback.
+- The password remains visible while typing so players can verify and deliberately share it.
+- `Update` continuously normalizes the field because `PasswordEditBoxWidget.OnChange` is not emitted for every key in this interface.
+- The client removes non-numeric characters and truncates input after the sixth digit; the server repeats validation before storing or comparing it.
 
-## Remocao com alicate
+## Pliers removal
 
-- Como a remocao usa um item principal, `ActionZellnoRemoveLock` e adicionada em `Pliers.SetActions()`; o registro apenas no alvo `Fence` nao e suficiente para a descoberta da Action.
+- Because removal uses a main item, `ActionZellnoRemoveLock` is added in `Pliers.SetActions()`; registering it only on the target `Fence` is not enough for action discovery.
+- The action requires non-ruined `Pliers`, a closed gate, hinges, and an attached and locked `Zellno_CombinationLock4`.
+- The client may display the action but never receives the private authorized-player list.
+- After the three-second action completes, the server repeats every validation and accepts only an authorized player.
+- Until a Zellno password exists, the lock may be recovered to prevent accidental lockout of the structure.
+- Removal explicitly calls the vanilla `CombinationLock.UnlockServer` behavior, which releases the slot and drops the intact item beside the gate.
+- Pliers receive vanilla dismantling wear only when removal actually completes.
 
-- A Action exige `Pliers` nao arruinado, portao fechado, dobradicas e o `Zellno_CombinationLock4` anexado e trancado.
-- O cliente pode apresentar a Action, mas nao recebe a lista privada de jogadores autorizados.
-- Ao concluir os tres segundos, o servidor repete todas as validacoes e somente aceita jogador autorizado.
-- Enquanto ainda nao existe senha Zellno, o cadeado pode ser recuperado para evitar aprisionamento acidental da estrutura.
-- A remocao chama explicitamente o comportamento vanilla de `CombinationLock.UnlockServer`, que destrava o slot e solta o item intacto junto ao portao.
-- O alicate recebe o desgaste vanilla de desmontagem somente quando a remocao realmente termina.
+## Zellno closing action
 
-## Fechamento Zellno
+- `ActionZellnoCloseFence` reproduces immediate server-side gate closing and displays `Close (Zellno)`.
+- The action requires an attached `Zellno_CombinationLock4` and a valid interaction selection for the structure.
+- `ActionCloseFence.ActionCondition()` is intercepted only for targets protected by Zellno Combo Lock, preventing duplication of the vanilla action.
+- Gates without Zellno Combo Lock continue to use the complete vanilla action.
 
-- `ActionZellnoCloseFence` replica o fechamento imediato do portao no servidor e usa o texto `Close (Zellno)`.
-- A Action exige um `Zellno_CombinationLock4` anexado e uma selecao de interacao valida para a estrutura.
-- `ActionCloseFence.ActionCondition()` e interceptada somente para alvos com Zellno Combo Lock, impedindo a duplicacao da Action vanilla.
-- Portoes sem Zellno Combo Lock continuam usando integralmente a Action vanilla.
+## Optional TraderPlus CarLock compatibility
 
-## Compatibilidade opcional com TraderPlus CarLock
+- The patch is guarded by `#ifdef CLDefine`, published by the TraderPlus CarLock ecosystem.
+- `ActionDetachCarLock.ActionCondition()` returns `false` only when the target resolves to a `Zellno_CombinationLock4`, a protected `Fence` or a protected RaG Hunting Cabin. Direct target, parent and hierarchy parent are checked to cover the formats supplied by the action system.
+- For vehicles and every unrelated target, the original TraderPlus implementation is called through `super`.
+- No TraderPlus PBO is modified, and Zellno Combo Lock remains usable without TraderPlus.
+- Reinstalling the lock clears the previous password and authorization through the existing installation flow.
 
-- O patch e protegido por `#ifdef CLDefine`, publicado pelo ecossistema CarLock do TraderPlus.
-- `ActionDetachCarLock.ActionCondition()` retorna `false` somente quando o alvo resolve para um `Zellno_CombinationLock4`, uma `Fence` protegida ou uma RaG Hunting Cabin protegida. Alvo direto, pai e pai hierarquico sao verificados para cobrir os formatos entregues pelo sistema de Actions.
-- Para veiculos e qualquer outro alvo, a implementacao original do TraderPlus e chamada por `super`.
-- Nenhum PBO do TraderPlus e modificado e o Zellno Combo Lock continua utilizavel sem TraderPlus.
-- Ao instalar novamente o cadeado, a senha e as autorizacoes anteriores sao apagadas pelo fluxo ja existente de nova instalacao.
+## Outside this release
 
-## Fora deste incremento
+- Progressive, configurable attempt lockout.
+- A disposable challenge per attempt.
+- Stringtable localization and translations.
 
-- Bloqueio progressivo e configuravel de tentativas.
-- Desafio descartavel por tentativa.
-- Stringtable e traducoes.
-
-Essas camadas serao adicionadas somente depois da homologacao pratica do nucleo no `Fence` vanilla.
+These layers may be added only after practical validation of the independent core.

@@ -1,161 +1,110 @@
-# Homologacao 1.0.0
+# Zellno Combo Lock 1.0.0 Validation
 
-## Compatibilidade RaG Hunting Cabin
+## Preconditions
 
-Preservar as cabines normal e admin existentes com seus respectivos
-`Zellno_CombinationLock4`:
+- Stop the local client and server before installing a candidate.
+- Back up the local mission profile and persistence storage.
+- Load `@ZellnoComboLock` on both client and server.
+- Do not modify the hosted production server during local validation.
+- Use new locks and structures when validating installation state.
 
-1. em cada cabine fechada, confirmar que aparece `Set Password (Zellno)`;
-2. confirmar que nao aparecem `Discar numero`, `Proximo digito` nem as Actions originais de abrir e fechar a porta;
-3. configurar uma senha de quatro a seis algarismos em cada cabine;
-4. abrir com `Open (Zellno)` e fechar com `Close (Zellno)`;
-5. confirmar que janelas, luzes e demais interacoes da cabine continuam disponiveis;
-6. reiniciar cliente e servidor e repetir abertura e fechamento;
-7. com alicate, remover o cadeado de cada cabine e confirmar que o item cai intacto;
-8. confirmar que as Actions originais da porta e do cadeado analogico retornam depois da retirada;
-9. confirmar o mesmo resultado na cabine normal e na cabine admin;
-10. iniciar sem `@RaG_Hunting_Cabin` e confirmar que o Zellno Combo Lock continua carregando.
-11. confirmar que `Death CarLock`/`Detach CarLock` nao aparece ao mirar a cabine com o cadeado Zellno;
-12. verificar que cliente e servidor nao registram `NULL pointer` em `ActionDetachCarLock`, `ActivateZellnoActionSet` ou `OnItemLocationChanged`.
+## Vanilla Fence gate
 
-## Compatibilidade RaG BaseBuilding
+1. Create a new `Zellno_CombinationLock4` through VPPAdminTools.
+2. Attach it to a vanilla `Fence` converted into a gate without changing its physical dials.
+3. Confirm that `Set Password (Zellno)` appears.
+4. Open the menu and verify that it is centered and that the HUD, quickbar and world action prompt are hidden.
+5. Confirm that letters, spaces and symbols are removed immediately.
+6. Confirm that three digits are rejected and that four, five and six digits are accepted.
+7. Confirm that a seventh digit is removed immediately.
+8. Verify native Backspace and Delete editing without closing the client or menu.
+9. Verify that both `CANCEL` and Escape close the menu and restore player controls, HUD and quickbar.
+10. Set the password once and confirm that the menu closes after the positive server response.
+11. Confirm that the lock remains attached and that `Open (Zellno)` opens the gate for the creator.
+12. Close it with `Close (Zellno)` and verify that the localized vanilla close action is not duplicated.
+13. Restart client and server cleanly and confirm that the authorized player can still reopen the gate without re-entering the password.
 
-Com uma porta RaG nova e um `Zellno_CombinationLock4` novo:
+## Additional player
 
-1. anexe o cadeado sem configurar previamente os mostradores;
-2. confirme que aparece `Set Password (Zellno)`;
-3. confirme que nao aparecem `Dial number` nem `Next digit`;
-4. configure uma senha entre quatro e seis algarismos;
-5. confirme que nao aparecem `Abrir`/`Open` nem `Fechar`/`Close` originais;
-6. abra com `Open (Zellno)` e feche com `Close (Zellno)`;
-7. confirme que o cadeado permanece anexado;
-8. com alicate, confirme `Remove Lock (Zellno)` e a soltura do item intacto;
-9. confirme que as Actions originais da porta RaG reaparecem depois da retirada;
-10. reinicie sem apagar a porta e valide novamente abertura, fechamento e persistencia;
-11. execute uma inicializacao sem RaG BaseBuilding e confirme que o addon Zellno continua carregando.
+1. Use a player who has never entered the password for the same closed gate.
+2. Confirm that `Open (Zellno)` opens the password interface.
+3. Verify that an incorrect password does not open the gate.
+4. Enter the correct password.
+5. Confirm that the gate opens and that this player becomes authorized for later access.
 
-O teste deve usar uma porta RaG nova. Uma estrutura da qual um attachment foi
-apagado administrativamente pode manter estado inconsistente e nao serve para
-homologar o fluxo.
+## Pliers removal
 
-## Regressoes preservadas da 0.4.3
+1. Keep the configured Zellno lock attached to a closed gate.
+2. Confirm that the removal action is absent with empty hands.
+3. Confirm that ruined pliers cannot complete removal.
+4. Hold usable pliers and aim at the gate interaction area.
+5. Confirm that `Remove Lock (Zellno)` appears.
+6. Hold the action for three seconds.
+7. Verify that the gate remains built, closed and undamaged.
+8. Verify that the intact lock is dropped beside the gate and can be collected.
+9. Confirm that the pliers receive only the expected dismantling wear.
+10. Install the same lock again and confirm that it requires a new password.
+11. In a separate test, confirm that an unauthorized player cannot remove a configured lock.
 
-## Pre-condicoes
+## RaG BaseBuilding compatibility
 
-- Servidor local de testes parado antes da instalacao.
-- Backup do perfil e da storage da missao local.
-- Cliente e servidor carregando `@ZellnoComboLock`.
-- Nenhuma alteracao na hospedagem 4Netplayers.
-- Portao e cadeado persistidos do ensaio anterior preservados para repetir exatamente o mesmo caso.
+Use a new RaG door or gate and a new `Zellno_CombinationLock4`:
 
-## Diagnostico confirmado na 0.3.8
+1. Attach the lock without configuring its dials.
+2. Confirm that `Set Password (Zellno)` appears.
+3. Confirm that `Dial number`, `Next digit` and the original open and close actions are hidden.
+4. Configure a password containing four to six digits.
+5. Open with `Open (Zellno)` and close with `Close (Zellno)`.
+6. Confirm that the lock remains attached.
+7. Remove it with usable pliers and verify that the intact item is released.
+8. Confirm that the original RaG door actions return after removal.
+9. Restart without deleting the structure and validate opening, closing and persistence again.
+10. Start once without RaG BaseBuilding and confirm that the main Zellno PBO still loads.
 
-1. O servidor aceitou a Action.
-2. `Start`, `OnStartClient` e `OpenForLock` executaram no cliente.
-3. `ShowScriptedMenu` chamou `Init`.
-4. `CreateWidgets` criou o layout sem erro.
-5. Todos os widgets foram vinculados e `OnShow` executou; a geometria solicitada foi `454,294 620x420` em uma tela `1528x1008`, mas o painel permaneceu invisivel.
-6. A `0.3.7` confirmou raiz e janela visiveis, retorno correto de `ShowScriptedMenu` e destruicao imediata do menu ao fim de `OpenForLock`.
-7. A causa e a ausencia de uma referencia forte: `s_ActiveMenu` precisa ser declarado com `ref` para possuir a instancia.
-8. A `0.3.8` manteve o menu vivo e chegou a segunda etapa, mas os quatro asteriscos permaneceram visiveis e Backspace produziu um encerramento abrupto sem crash registrado.
+A structure from which an attachment was deleted administratively may retain inconsistent state and must not be used to validate the workflow.
 
-## Diagnostico confirmado na 0.3.9
+## RaG Hunting Cabin compatibility
 
-1. A primeira entrada foi armazenada apenas no cliente para a confirmacao.
-2. O valor interno do campo foi limpo corretamente antes da segunda entrada.
-3. A mascara visual `****` permaneceu desenhada apesar de o valor interno estar vazio.
-4. O segundo clique sem digitar confirmou que o servidor nao recebeu uma senha fantasma.
-5. A confirmacao duplicada foi removida por ser desnecessaria para este fluxo.
+Run the following cases on both normal and admin cabin variants:
 
-## Diagnostico confirmado na 0.3.10
+1. Attach a new `Zellno_CombinationLock4` to a closed cabin.
+2. Confirm that `Set Password (Zellno)` appears.
+3. Confirm that the analog dial actions and original door open and close actions are hidden.
+4. Configure a password containing four to six digits.
+5. Open with `Open (Zellno)` and close with `Close (Zellno)`.
+6. Verify that windows, lights, construction and unrelated cabin interactions remain available.
+7. Restart client and server and repeat opening and closing.
+8. Remove the lock with pliers and verify that it drops intact.
+9. Confirm that the original cabin and analog-lock actions return after removal.
+10. Confirm that `Death CarLock` or `Detach CarLock` does not appear while a Zellno lock is attached.
+11. Start once without `@RaG_Hunting_Cabin` and confirm that Zellno Combo Lock still loads.
 
-1. A senha foi informada uma unica vez e aceita pelo servidor.
-2. A janela fechou depois da resposta positiva.
-3. `Open (Zellno)` abriu o portao para o criador autorizado.
-4. O texto da instrucao e dos botoes ficou superdimensionado e cortado.
-5. O prompt da Action permaneceu desenhado sobre a janela.
+## TraderPlus CarLock regression
 
-## Validacao do campo, fechamento e escala
+1. Aim at a Zellno-protected structure while holding pliers and confirm that the false-positive `Detach CarLock` action is hidden.
+2. On a real vehicle protected by CarLock, confirm that `Detach CarLock` remains available under its normal permission rules.
+3. Confirm that no TraderPlus PBO was modified.
 
-1. Confirmar que aparece `Set Password (Zellno)` no portao existente.
-2. Pressionar `F` uma unica vez.
-3. Registrar se a janela aparece no centro da tela, sem repetir a Action.
-4. Se nao aparecer, encerrar cliente e servidor e coletar os logs do ensaio.
-5. Digitar tres numeros e confirmar a recusa local.
-6. Confirmar que os numeros reais aparecem no campo, sem mascara de asteriscos.
-7. Digitar um quarto, quinto e sexto numero e confirmar que todos sao aceitos.
-8. Tentar digitar um setimo numero e confirmar que ele desaparece imediatamente.
-9. Digitar letras, espacos e simbolos e confirmar que desaparecem imediatamente.
-10. Usar Backspace no final e Delete com o cursor antes de um caractere; confirmar edicao normal sem fechar cliente ou menu.
-11. Selecionar `CANCEL` e confirmar fechamento e restauracao do controle, HUD e barra rapida.
-12. Reabrir, pressionar Escape e confirmar o mesmo fechamento seguro.
-13. Reabrir, informar de quatro a seis numeros e selecionar `SET PASSWORD` uma unica vez.
-14. Confirmar que a janela fecha depois da resposta positiva do servidor.
-15. Confirmar que titulo, instrucao, campo e botoes cabem integralmente na janela central.
-16. Confirmar que prompt da Action, HUD e barra rapida permanecem ocultos enquanto a janela esta aberta.
+## Vanilla regression
 
-## Configuracao depois de anexar
+1. Confirm that the vanilla `CombinationLock4` retains its original behavior, including dropping after a normal unlock.
+2. Confirm that a gate without Zellno Combo Lock retains its localized vanilla open and close actions.
+3. Confirm that installing Zellno Combo Lock does not globally alter unrelated structures or locks.
 
-1. Criar um novo `Zellno_CombinationLock4` pelo VPP.
-2. Instalar em um `Fence` convertido em portao.
-3. Nao configurar os mostradores enquanto estiver nas maos.
-4. Confirmar que aparece `Set Password (Zellno)` no portao.
-5. Selecionar a Action e confirmar que a janela aparece imediatamente.
-6. Informar menos de quatro caracteres e confirmar a recusa local.
-7. Informar letras e confirmar a recusa local.
-8. Informar de quatro a seis numeros e selecionar `SET PASSWORD` uma unica vez.
-9. Confirmar que a janela fecha e que o cadeado permanece anexado.
-10. Selecionar `Open (Zellno)` e confirmar a abertura para o criador autorizado.
+## Log review
 
-## Jogador memorizado
+After every candidate test, inspect the latest client and server script logs and RPT files for:
 
-1. Fechar pela Action `Close (Zellno)`.
-2. Confirmar que aparece `Open (Zellno)`.
-3. Abrir sem exibir a janela e sem digitar novamente.
-4. Fechar, sair do cliente e reiniciar o servidor de modo limpo.
-5. Entrar novamente e confirmar que `Open (Zellno)` ainda abre imediatamente.
+- `ZellnoComboLock` errors;
+- script compilation errors;
+- `NULL pointer` involving Zellno actions;
+- `ActionDetachCarLock` errors;
+- `ActivateZellnoActionSet` errors;
+- `OnItemLocationChanged` errors.
 
-## Fechamento Zellno
+## Outside the validated scope
 
-1. Abrir um portao com Zellno Combo Lock configurado.
-2. Confirmar que aparece apenas `Close (Zellno)`.
-3. Confirmar que a Action vanilla localizada `Fechar`/`Close` nao aparece junto.
-4. Executar `Close (Zellno)` e confirmar que o portao fecha normalmente.
-5. Confirmar que o cadeado permanece anexado e que `Open (Zellno)` volta a aparecer.
-6. Em outro portao sem Zellno Combo Lock, confirmar que o fechamento vanilla continua disponivel.
-
-## Segundo jogador
-
-1. Com o mesmo portao fechado, usar um jogador que nunca acertou aquela combinacao.
-2. Confirmar que `Open (Zellno)` apresenta a janela de senha.
-3. Confirmar que uma senha incorreta nao abre o portao.
-4. Informar a senha correta.
-5. Confirmar que o portao abre e esse segundo jogador passa a conseguir reabrir sem senha.
-
-## Remocao com alicate
-
-1. Manter o portao fechado e o Zellno Combo Lock configurado e anexado.
-2. Sem item nas maos, confirmar que a Action de remocao nao aparece.
-3. Segurar um alicate arruinado e confirmar que a Action de remocao nao pode ser executada.
-4. Segurar um alicate utilizavel e apontar para a area de interacao do portao.
-5. Confirmar que aparece `Remove Lock (Zellno)`.
-6. Manter a Action durante tres segundos.
-7. Confirmar que o portao permanece construido, fechado e sem dano novo.
-8. Confirmar que o cadeado cai intacto junto ao portao e pode ser recolhido.
-9. Confirmar que o alicate recebe somente o desgaste de desmontagem.
-10. Instalar novamente o mesmo cadeado e confirmar que ele exige nova configuracao de senha.
-11. Em ensaio separado, confirmar que um jogador nao autorizado nao consegue concluir a remocao de um cadeado configurado.
-
-## Regressao
-
-1. Confirmar que `CombinationLock4` vanilla continua com o comportamento vanilla, inclusive caindo ao destrancar.
-2. Com alicate nas maos e mirando uma Fence com Zellno Combo Lock, confirmar que `Detach CarLock` nao aparece.
-3. Em um veiculo com CarLock real e com as permissoes normais, confirmar que `Detach CarLock` continua aparecendo e funcionando.
-4. Verificar o RPT do cliente e do servidor por erros contendo `ZellnoComboLock`, `SCRIPT` ou `NULL pointer`.
-
-## Fora deste teste
-
-- Compatibilidade com BaseBuildingPlus (BBP).
-- Compatibilidade com controle/gamepad e teclado virtual.
-- Localizacao por stringtable.
-- Bloqueio progressivo de tentativas.
+- BaseBuildingPlus (BBP).
+- Controller/gamepad and virtual keyboard support.
+- Stringtable localization.
+- Progressive attempt lockout.

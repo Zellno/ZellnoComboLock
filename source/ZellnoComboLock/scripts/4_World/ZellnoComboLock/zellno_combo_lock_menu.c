@@ -93,7 +93,7 @@ class ZellnoComboLockMenu : UIScriptedMenu
                 s_PendingLock = null;
 
             if (s_ActiveMenu && s_ActiveMenu.m_Lock == lock)
-                s_ActiveMenu.RequestClose("servidor aceitou");
+                s_ActiveMenu.RequestClose("server accepted");
 
             return;
         }
@@ -282,7 +282,7 @@ class ZellnoComboLockMenu : UIScriptedMenu
         PlayerBase player = PlayerBase.Cast(g_Game.GetPlayer());
         if (!player)
         {
-            RequestClose("jogador ausente");
+            RequestClose("player missing");
             return;
         }
 
@@ -362,12 +362,12 @@ class ZellnoComboLockMenu : UIScriptedMenu
     {
         super.Update(timeslice);
 
-        // Com o foco no EditBox, o widget consome eventos brutos de teclado e
-        // OnKeyDown pode nao receber KC_ESCAPE. Os menus vanilla consultam a
-        // acao global de retorno por quadro para fechar de forma confiavel.
+        // A focused EditBox consumes raw keyboard events, so OnKeyDown may
+        // not receive KC_ESCAPE. Poll the global back action every frame,
+        // following the vanilla menu pattern, for reliable closure.
         if (g_Game && GetUApi().GetInputByID(UAUIBack).LocalPress())
         {
-            RequestClose("acao UAUIBack");
+            RequestClose("UAUIBack action");
             return;
         }
 

@@ -43,9 +43,9 @@ class ActionZellnoRemoveLock : ActionContinuousBase
         if (!ZellnoFenceCompatibility.HasInteractionSelection(fence, target))
             return false;
 
-        // A lista de jogadores autorizados pertence somente ao servidor.
-        // O cliente pode exibir a Action, mas a conclusao sempre e revalidada
-        // de forma autoritativa antes de soltar o cadeado.
+        // The authorized-player list exists only on the server.
+        // The client may display the action, but completion is always
+        // authoritatively validated again before releasing the lock.
         if (g_Game && g_Game.IsServer())
             return m_ZellnoLock.ZellnoCanPlayerRemove(player, fence);
 
@@ -78,8 +78,8 @@ class ActionZellnoRemoveLock : ActionContinuousBase
     }
 }
 
-// Acoes que usam um item principal sao descobertas pela lista de acoes do
-// item nas maos. Registrar somente no Fence nao faz a Action aparecer.
+// Actions using a main item are discovered through the action list of the
+// item in hand. Registering it only on Fence does not expose the action.
 modded class Pliers
 {
     override void SetActions()

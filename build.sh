@@ -26,7 +26,7 @@ PUBLIC_KEY="$HOME/dayz/modding/keys/Zellno/Zellno.bikey"
 EXPECTED_BUILD_MOD="$PROJECT_DIR/build/@ZellnoComboLock"
 
 if [ "$BUILD_MOD" != "$EXPECTED_BUILD_MOD" ]; then
-    echo "Destino de build inesperado: $BUILD_MOD" >&2
+    echo "Unexpected build destination: $BUILD_MOD" >&2
     exit 1
 fi
 
@@ -44,7 +44,7 @@ for required in \
     "$PUBLIC_KEY"
 do
     if [ ! -f "$required" ]; then
-        echo "Arquivo obrigatorio nao encontrado:" >&2
+        echo "Required file not found:" >&2
         echo "$required" >&2
         exit 1
     fi
@@ -69,7 +69,7 @@ RAG_COMPAT_PBO="$BUILD_OPTIONAL/ZellnoComboLock_RaGCompat.pbo"
 for pbo in "$CORE_PBO" "$RAG_COMPAT_PBO"
 do
     if [ ! -f "$pbo" ]; then
-        echo "O FileBank nao criou o PBO esperado:" >&2
+        echo "FileBank did not create the expected PBO:" >&2
         echo "$pbo" >&2
         exit 1
     fi
@@ -90,7 +90,7 @@ RAG_COMPAT_SIGNATURE="$RAG_COMPAT_PBO.Zellno.bisign"
 for signature in "$CORE_SIGNATURE" "$RAG_COMPAT_SIGNATURE"
 do
     if [ ! -f "$signature" ]; then
-        echo "A assinatura esperada nao foi criada:" >&2
+        echo "The expected signature was not created:" >&2
         echo "$signature" >&2
         exit 1
     fi
@@ -115,12 +115,12 @@ echo "$RAG_VERIFY_OUTPUT"
 
 if ! grep -q 'is OK' <<< "$CORE_VERIFY_OUTPUT" || \
    ! grep -q 'is OK' <<< "$RAG_VERIFY_OUTPUT"; then
-    echo "Falha na validacao de uma das assinaturas." >&2
+    echo "One or more signatures failed validation." >&2
     exit 1
 fi
 
 echo
-echo "Propriedades dos PBOs:"
+echo "PBO properties:"
 wine "$BANKREV" \
     -properties \
     "$(winepath -w "$CORE_PBO")"
@@ -129,7 +129,7 @@ wine "$BANKREV" \
     "$(winepath -w "$RAG_COMPAT_PBO")"
 
 echo
-echo "Arquivos produzidos:"
+echo "Produced files:"
 find "$BUILD_MOD" -type f -printf '%P\n' | sort
 
 echo
@@ -141,8 +141,8 @@ sha256sum \
     "$RAG_COMPAT_SIGNATURE"
 
 echo
-echo "Build validado:"
+echo "Validated build:"
 echo "$BUILD_MOD"
 
 echo
-echo "Nenhuma instalacao foi realizada."
+echo "No installation was performed."

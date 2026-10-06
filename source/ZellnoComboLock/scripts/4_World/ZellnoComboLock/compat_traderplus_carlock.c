@@ -1,7 +1,7 @@
 #ifdef CLDefine
-// O TraderPlus CarLock oferece ActionDetachCarLock a administradores mesmo
-// quando CarLockTargetHelper nao encontra um veiculo. Bloqueamos somente o
-// falso positivo sobre uma Fence protegida pelo Zellno Combo Lock.
+// TraderPlus CarLock may offer ActionDetachCarLock to administrators even
+// when CarLockTargetHelper cannot resolve a vehicle. Block only the false
+// positive on a Fence protected by Zellno Combo Lock.
 class ZellnoTraderPlusCarLockCompatibility
 {
     static bool HasZellnoLock(ActionTarget target)

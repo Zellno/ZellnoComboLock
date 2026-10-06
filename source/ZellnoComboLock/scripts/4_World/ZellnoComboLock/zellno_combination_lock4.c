@@ -57,10 +57,10 @@ class Zellno_CombinationLock4 : CombinationLock4
         if (!ZellnoCanPlayerRemove(player, fence))
             return false;
 
-        // Chamada explicita ao comportamento vanilla: destrava o slot e
-        // deposita o cadeado intacto junto ao portao.
+        // Explicitly call the vanilla behavior: release the slot and drop
+        // the intact lock beside the gate.
         super.UnlockServer(player, fence);
-        Print(string.Format("[ZellnoComboLock] Cadeado removido com alicate: player=%1", player.GetIdentity().GetId()));
+        Print(string.Format("[ZellnoComboLock] Lock removed with pliers: player=%1", player.GetIdentity().GetId()));
         return true;
     }
 
@@ -79,7 +79,7 @@ class Zellno_CombinationLock4 : CombinationLock4
             return false;
 
         super.UnlockServer(player, cabin);
-        Print(string.Format("[ZellnoComboLock] Cadeado removido da RaG Hunting Cabin com alicate: player=%1", player.GetIdentity().GetId()));
+        Print(string.Format("[ZellnoComboLock] Lock removed from RaG Hunting Cabin with pliers: player=%1", player.GetIdentity().GetId()));
         return true;
     }
 #endif
@@ -246,7 +246,7 @@ class Zellno_CombinationLock4 : CombinationLock4
             }
 
             SetSynchDirty();
-            Print(string.Format("[ZellnoComboLock] Senha configurada: player=%1", playerId));
+            Print(string.Format("[ZellnoComboLock] Password configured: player=%1", playerId));
             ZellnoSendResult(sender, ZELLNO_RESULT_ACCEPTED);
             return;
         }
@@ -261,13 +261,13 @@ class Zellno_CombinationLock4 : CombinationLock4
         if (fence)
         {
             fence.OpenFence();
-            Print(string.Format("[ZellnoComboLock] Senha aceita e Fence aberta: player=%1", playerId));
+            Print(string.Format("[ZellnoComboLock] Password accepted and Fence opened: player=%1", playerId));
         }
 #ifdef RAG_HUNTING_CABIN
         else if (cabin)
         {
             cabin.OpenHuntCabDoor();
-            Print(string.Format("[ZellnoComboLock] Senha aceita e RaG Hunting Cabin aberta: player=%1", playerId));
+            Print(string.Format("[ZellnoComboLock] Password accepted and RaG Hunting Cabin opened: player=%1", playerId));
         }
 #endif
     }
