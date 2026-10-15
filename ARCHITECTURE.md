@@ -46,7 +46,7 @@ While a Zellno Combo Lock is attached, only `ActionDialCombinationLockOnHuntingC
 - If no Zellno password exists, the server stores the single valid entry and authorizes its creator.
 - If a Zellno password exists, the server compares it, authorizes the player and opens the structure only on an exact match.
 - `m_ZellnoCode` exists only on the server; only `m_ZellnoConfigured` is synchronized.
-- Inherited analog actions are removed, and `UnlockServer` does not accept the vanilla dials.
+- Inherited analog actions are removed, and `UnlockOnServer` does not accept the vanilla dials.
 - An attempt does not modify `m_Combination`, the physical dials or the lock slot.
 - A simple minimum interval of one second is enforced per player and per lock. It protects the RPC endpoint but is not a progressive lockout system.
 - The root and background use the current pixel resolution; the `500x320` window is explicitly centered before and after `super.OnShow()`.
@@ -70,7 +70,7 @@ While a Zellno Combo Lock is attached, only `ActionDialCombinationLockOnHuntingC
 - The client may display the action but never receives the private authorized-player list.
 - After the three-second action completes, the server repeats every validation and accepts only an authorized player.
 - Until a Zellno password exists, the lock may be recovered to prevent accidental lockout of the structure.
-- Removal explicitly calls the vanilla `CombinationLock.UnlockServer` behavior, which releases the slot and drops the intact item beside the gate.
+- Removal explicitly calls the vanilla `CombinationLock.UnlockOnServer` behavior, which releases the slot and drops the intact item beside the gate.
 - Pliers receive vanilla dismantling wear only when removal actually completes.
 
 ## Zellno closing action

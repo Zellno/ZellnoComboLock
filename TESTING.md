@@ -108,3 +108,18 @@ After every candidate test, inspect the latest client and server script logs and
 - Controller/gamepad and virtual keyboard support.
 - Stringtable localization.
 - Progressive attempt lockout.
+
+## DayZ 1.30 local validation
+
+- Updated the inherited unlock API to `UnlockOnServer`.
+- Disabled the inherited vanilla combination-lock unlock action.
+- Confirmed password configuration and authorized reopening.
+- Confirmed opening and closing on tested vanilla Fence and RaG structures.
+- Confirmed lock removal and reinstallation.
+- Confirmed authorization persistence after server restart.
+- Confirmed that the local test server and client operated without
+  PvZmoD Spawn System, which currently has an unrelated DayZ 1.30
+  script compilation problem.
+
+The earlier two-player multiplayer test predates DayZ 1.30.
+A new two-player validation on DayZ 1.30 remains pending.

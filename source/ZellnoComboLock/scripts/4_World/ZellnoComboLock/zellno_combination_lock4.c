@@ -32,6 +32,7 @@ class Zellno_CombinationLock4 : CombinationLock4
         RemoveAction(ActionDialCombinationLock);
         RemoveAction(ActionNextCombinationLockDialOnTarget);
         RemoveAction(ActionDialCombinationLockOnTarget);
+        RemoveAction(ActionCombinationLockUnlock);
     }
 
     bool ZellnoHasCode()
@@ -59,7 +60,7 @@ class Zellno_CombinationLock4 : CombinationLock4
 
         // Explicitly call the vanilla behavior: release the slot and drop
         // the intact lock beside the gate.
-        super.UnlockServer(player, fence);
+        super.UnlockOnServer(player, fence);
         Print(string.Format("[ZellnoComboLock] Lock removed with pliers: player=%1", player.GetIdentity().GetId()));
         return true;
     }
@@ -78,7 +79,7 @@ class Zellno_CombinationLock4 : CombinationLock4
         if (!ZellnoCanPlayerRemoveHuntingCabin(player, cabin))
             return false;
 
-        super.UnlockServer(player, cabin);
+        super.UnlockOnServer(player, cabin);
         Print(string.Format("[ZellnoComboLock] Lock removed from RaG Hunting Cabin with pliers: player=%1", player.GetIdentity().GetId()));
         return true;
     }
@@ -352,7 +353,7 @@ class Zellno_CombinationLock4 : CombinationLock4
         return true;
     }
 
-    override void UnlockServer(EntityAI player, EntityAI parent)
+    override void UnlockOnServer(EntityAI player, EntityAI parent, bool isInsideLock = false)
     {
         // The inherited analogue dial must not authorize or unlock a Zellno lock.
     }

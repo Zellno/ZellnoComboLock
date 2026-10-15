@@ -28,6 +28,15 @@ The validated core:
 
 The continuous `Remove Lock (Zellno)` action is registered directly on the pliers, as required by the DayZ main-item action system. It appears when the player aims at a closed gate while holding usable pliers. Authorization is validated again on the server when the action completes. Vanilla lock behavior releases the slot and drops the intact lock beside the gate; the gate is neither dismantled nor damaged. Locks that do not yet have a password can also be recovered.
 
+## DayZ 1.30 compatibility
+
+The lock has been adapted to the DayZ 1.30 `UnlockOnServer`
+API. Local tests confirmed opening, closing, password configuration,
+lock removal and persistence after server restart on vanilla Fence
+gates and tested RaG structures.
+
+DayZ 1.30 multiplayer validation with a second player remains pending.
+
 ## BaseBuildingPlus compatibility
 
 Zellno Combo Lock has not yet been tested with BaseBuildingPlus (BBP). Compatibility with BBP doors, gates and other lockable structures is not guaranteed in this version. Server administrators should not consider BBP supported until dedicated compatibility testing has been completed.
