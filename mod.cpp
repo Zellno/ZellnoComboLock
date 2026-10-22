@@ -7,4 +7,4 @@ tooltip = "Independent vanilla-derived combination lock";
 overview = "A Zellno-owned classname derived from the vanilla four-dial combination lock.";
 action = "https://github.com/Zellno/ZellnoComboLock";
 author = "Zellno";
-version = "1.0.0";
+version = "1.0.1";

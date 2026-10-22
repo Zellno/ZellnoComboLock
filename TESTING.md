@@ -1,4 +1,4 @@
-# Zellno Combo Lock 1.0.0 Validation
+# Zellno Combo Lock 1.0.1 Validation
 
 ## Preconditions
 
@@ -77,6 +77,8 @@ Run the following cases on both normal and admin cabin variants:
 8. Remove the lock with pliers and verify that it drops intact.
 9. Confirm that the original cabin and analog-lock actions return after removal.
 10. Confirm that `Death CarLock` or `Detach CarLock` does not appear while a Zellno lock is attached.
+11. With the current RaG release, verify that `Open (Zellno)` actually moves the cabin door instead of merely completing the action.
+12. Remove the lock with pliers, reinstall the same item, set a new password, and verify opening and closing again.
 11. Start once without `@RaG_Hunting_Cabin` and confirm that Zellno Combo Lock still loads.
 
 ## TraderPlus CarLock regression
@@ -120,6 +122,13 @@ After every candidate test, inspect the latest client and server script logs and
 - Confirmed that the local test server and client operated without
   PvZmoD Spawn System, which currently has an unrelated DayZ 1.30
   script compilation problem.
+
+## Version 1.0.1 RaG Hunting Cabin regression validation
+
+- Confirmed clean server startup with no Game, World or Mission compilation errors.
+- Confirmed opening and closing on the current RaG Hunting Cabin release.
+- Confirmed removal with pliers, reinstallation, password reconfiguration, opening and closing again.
+- Confirmed the final `1.0.1` build locally after the laboratory candidate passed the same workflow.
 
 The earlier two-player multiplayer test predates DayZ 1.30.
 A new two-player validation on DayZ 1.30 remains pending.

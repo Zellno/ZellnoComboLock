@@ -189,7 +189,7 @@ class Zellno_CombinationLock4 : CombinationLock4
         if (!m_ZellnoConfigured || !ZellnoHuntingCabinContextIsValid(player, cabin) || !ZellnoIsPlayerAuthorized(player))
             return;
 
-        cabin.OpenHuntCabDoor();
+        cabin.ZellnoOpenAuthorizedDoor();
         Print(string.Format("[ZellnoComboLock] Abertura autorizada de RaG Hunting Cabin: player=%1", player.GetIdentity().GetId()));
         ZellnoSendResult(player.GetIdentity(), ZELLNO_RESULT_ACCEPTED);
     }
@@ -267,7 +267,7 @@ class Zellno_CombinationLock4 : CombinationLock4
 #ifdef RAG_HUNTING_CABIN
         else if (cabin)
         {
-            cabin.OpenHuntCabDoor();
+            cabin.ZellnoOpenAuthorizedDoor();
             Print(string.Format("[ZellnoComboLock] Password accepted and RaG Hunting Cabin opened: player=%1", playerId));
         }
 #endif

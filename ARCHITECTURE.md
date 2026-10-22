@@ -1,4 +1,4 @@
-# Architecture 1.0.0
+# Architecture 1.0.1
 
 ## Dependencies
 
@@ -23,21 +23,23 @@ Only `scope`, display name and description are declared. The model, textures, ma
 
 ## Electronic workflow, menu and removal
 
-### Optional RaG BaseBuilding compatibility
+### RaG BaseBuilding compatibility
 
 RaG doors derive from `Fence`, but register analog actions again in their own `SetActions()` and use model selections other than `gate_interact`. Zellno compatibility uses only the inherited vanilla interface: `Fence`, `GetCombinationLock`, `OpenFence` and `CloseFence`.
 
-No RaG class is compiled as a type in the core PBO, and `RaG_BaseBuilding` is not listed in its `requiredAddons[]`. Runtime detection uses the `RaG_BB_` classname prefix, keeping the Zellno core independent when RaG is absent. A second PBO is produced in `optional/` and should be moved to `addons/` only on servers using RaG BaseBuilding.
+No RaG class is compiled as a type in the core PBO, and `RaG_BaseBuilding` is not listed in its `requiredAddons[]`. Runtime detection uses the `RaG_BB_` classname prefix, keeping the Zellno core independent when RaG is absent. A separate compatibility PBO declares the RaG dependencies while keeping the core PBO independent. The standard Workshop package places both PBOs and signatures in `addons`.
 
 While a Zellno lock is attached, the analog actions and original open and close actions return `false` only for that door. Removing the lock naturally restores the original conditions. Vanilla locks and unrelated structures are not modified.
 
-### Optional RaG Hunting Cabin compatibility
+### RaG Hunting Cabin compatibility
 
 RaG Hunting Cabin publishes the `RAG_HUNTING_CABIN` define. The entire adapter is guarded by this define; without the mod installed, no RaG class is compiled or required by Zellno Combo Lock.
 
 Normal and admin cabins are instances of the same `rag_hunting_cabin` class. The admin variant differs only through its internal `m_IsAdminHuntingCabin` state, so one adapter supports both. The adapter uses the vanilla `Att_CombinationLock` slot, the `cabin_door` selection and the public `GetCombinationLock`, `OpenHuntCabDoor` and `CloseHuntCabDoor` methods.
 
 While a Zellno Combo Lock is attached, only `ActionDialCombinationLockOnHuntingCabin`, `ActionNextCombinationLockDialOnHuntingCabin`, `ActionOpenHuntingCabin` and `ActionCloseHuntingCabin` are suppressed. Windows, lights, construction and unrelated actions remain intact. Removing the lock restores all four original actions.
+
+Current RaG releases reject `OpenHuntCabDoor()` whenever `IsLocked()` is true. After Zellno completes its own server-side authorization, `ZellnoOpenAuthorizedDoor()` enables a private, short-lived flag and calls RaG's native opening method. The cabin's `IsLocked()` override returns false only during that call, then immediately falls back to `super.IsLocked()`. This retains RaG animation, synchronization and navmesh handling without globally weakening the cabin lock.
 
 - The action opens the interface on the client in `Start`; opening the UI does not depend on an RPC.
 - The server validates the player, identity, closed structure, attached lock, locked state and distance again. A vanilla `Fence` uses a 3-meter limit; RaG Hunting Cabin uses 5 meters because its attachments share the cabin's central origin.

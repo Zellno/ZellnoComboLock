@@ -20,7 +20,7 @@ class CfgMods
         dir = "ZellnoComboLock_RaGCompat";
         name = "Zellno Combo Lock - RaG Compatibility";
         author = "Zellno";
-        version = "1.0.0";
+        version = "1.0.1";
         type = "mod";
 
         dependencies[] =

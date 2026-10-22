@@ -4,7 +4,7 @@ An independent DayZ addon that modernizes the vanilla four-dial combination lock
 
 ## Current status
 
-Version `1.0.0` preserves the independent core and adds a second optional compatibility PBO. `optional/ZellnoComboLock_RaGCompat.pbo` explicitly depends on `ZellnoComboLock` and `RaG_BaseBuilding`, ensuring that its `4_World` filters are applied after RaG changes without preventing the main PBO from running on servers without RaG. Servers using RaG must copy this PBO and its signature from `optional` to `addons`; servers without RaG must leave them in `optional`.
+Version `1.0.1` preserves the independent core and updates the RaG Hunting Cabin adapter for the current RaG door-locking behavior. The standard Workshop package already supplies the core and RaG compatibility PBOs together in `addons`; users must not move, rename or duplicate them.
 
 The addon registers this classname:
 
@@ -37,11 +37,13 @@ gates and tested RaG structures.
 
 DayZ 1.30 multiplayer validation with a second player remains pending.
 
+Version `1.0.1` also adapts Hunting Cabin opening to the current RaG guard that rejects its native open method while a combination lock reports the cabin as locked. The adapter bypasses that guard only during an already authorized server-side Zellno opening call and otherwise preserves RaG locking behavior.
+
 ## BaseBuildingPlus compatibility
 
 Zellno Combo Lock has not yet been tested with BaseBuildingPlus (BBP). Compatibility with BBP doors, gates and other lockable structures is not guaranteed in this version. Server administrators should not consider BBP supported until dedicated compatibility testing has been completed.
 
-## Version 1.0.0 scope
+## Version 1.0.1 scope
 
 The release validates that the new item:
 
@@ -84,7 +86,7 @@ The vanilla `CombinationLock4` classname is not modified. This release contains 
 
 ## Build
 
-`build.sh` follows the Linux/Wine workflow used by other Zellno projects and operates only inside `build/@ZellnoComboLock`. It builds, signs and verifies the main PBO and the optional RaG BaseBuilding compatibility PBO, but it does not install the addon on the client or server.
+`build.sh` follows the Linux/Wine workflow used by other Zellno projects and operates only inside `build/@ZellnoComboLock`. It builds, signs and verifies the main PBO and the RaG compatibility PBO, but it does not install the addon on the client or server.
 
 Compiled PBOs, signatures and private signing keys are intentionally excluded from this repository.
 
@@ -93,11 +95,11 @@ Compiled PBOs, signatures and private signing keys are intentionally excluded fr
 1. Copy `@ZellnoComboLock` to the DayZ server directory.
 2. Copy `keys/Zellno.bikey` from the compiled mod package to the server `keys` directory.
 3. Add `@ZellnoComboLock` to the client and server `-mod` launch parameter.
-4. If RaG BaseBuilding is installed, copy `ZellnoComboLock_RaGCompat.pbo` and its matching signature from `optional` to `addons`.
-5. Load RaG BaseBuilding before Zellno Combo Lock.
+4. Keep every supplied PBO and matching signature together in `addons`.
+5. Load the RaG mods before Zellno Combo Lock.
 6. Restart the server.
 
-The main PBO has no RaG runtime dependency. Servers that do not use RaG BaseBuilding must leave the optional compatibility files in `optional`.
+The main PBO remains architecturally independent from RaG; the compatibility layer is packaged separately and loaded only when its declared RaG dependencies are present.
 
 ## Documentation
 

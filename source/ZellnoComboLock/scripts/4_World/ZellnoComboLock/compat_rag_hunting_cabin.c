@@ -198,6 +198,30 @@ class ActionZellnoRemoveHuntingCabinLock : ActionContinuousBase
 
 modded class rag_hunting_cabin
 {
+    protected bool m_ZellnoAuthorizedOpenInProgress;
+
+    void ZellnoOpenAuthorizedDoor()
+    {
+        if (!g_Game || !g_Game.IsServer() || IsOpened())
+            return;
+
+        // Current RaG rejects OpenHuntCabDoor() while any combination lock
+        // reports the cabin as locked. Zellno has already authenticated the
+        // player server-side, so bypass that guard only for this call while
+        // retaining RaG's own animation, state synchronization and navmesh.
+        m_ZellnoAuthorizedOpenInProgress = true;
+        OpenHuntCabDoor();
+        m_ZellnoAuthorizedOpenInProgress = false;
+    }
+
+    override bool IsLocked()
+    {
+        if (m_ZellnoAuthorizedOpenInProgress)
+            return false;
+
+        return super.IsLocked();
+    }
+
     override void SetActions()
     {
         super.SetActions();
